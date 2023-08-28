@@ -46,4 +46,46 @@ const app = express();
 
 app.use(bodyParser.json());
 
+const todos = [];
+
+app.get('/todos', (req, res) => {
+  res.status(200).json(todos);
+});
+
+app.get('/todos/:id', (req, res) => {
+  const todo = todos.find((todo) => todo.id === req.params.id);
+  if (todo) {
+    res.status(200).json(todo);
+  } else {
+    res.status(404).send();
+  }
+});
+
+app.post('/todos', (req, res) => {
+  const todo = req.body;
+  todo.id = Math.random().toString();
+  todos.push(todo);
+  res.status(201).json({ id: todo.id });
+});
+
+app.put('/todos/:id', (req, res) => {
+  const todo = todos.find((todo) => todo.id === req.params.id);
+  if (todo) {
+    Object.assign(todo, req.body);
+    res.status(200).send();
+  } else {
+    res.status(404).send();
+  }
+});
+
+app.delete('/todos/:id', (req, res) => {
+  const todoIndex = todos.findIndex((todo) => todo.id === req.params.id);
+  if (todoIndex !== -1) {
+    todos.splice(todoIndex, 1);
+    res.status(200).send();
+  } else {
+    res.status(404).send();
+  }
+});
+
 module.exports = app;
